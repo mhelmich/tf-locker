@@ -19,11 +19,13 @@ package backend
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	// all go postgres driver
 
+	"github.com/hashicorp/terraform/state"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
@@ -110,8 +112,17 @@ func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo strin
 		return err
 	} else if !queriedLockInfo.Valid {
 		logrus.Info("Queried lock id is nil")
-	} else if lockInfo != queriedLockInfo.String {
-		return fmt.Errorf("Lock ids don't line up: want [%s] have [%s]", queriedLockInfo.String, lockInfo)
+	} else if queriedLockInfo.String != "" {
+		// lockInfo is only the lock ID
+		li := &state.LockInfo{}
+		err = json.Unmarshal([]byte(queriedLockInfo.String), li)
+		if err != nil {
+			return err
+		}
+
+		if li.ID != lockInfo {
+			return fmt.Errorf("Lock ids don't line up: want [%s] have [%s]", queriedLockInfo.String, lockInfo)
+		}
 	}
 
 	insert, err := txn.Prepare(upsertInsertStr)
