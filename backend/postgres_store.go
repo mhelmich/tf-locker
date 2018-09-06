@@ -24,8 +24,6 @@ import (
 	"time"
 
 	// all go postgres driver
-
-	"github.com/hashicorp/terraform/state"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
@@ -114,7 +112,7 @@ func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo strin
 		logrus.Info("Queried lock id is nil")
 	} else if queriedLockInfo.String != "" {
 		// lockInfo is only the lock ID
-		li := &state.LockInfo{}
+		li := &LockInfo{}
 		err = json.Unmarshal([]byte(queriedLockInfo.String), li)
 		if err != nil {
 			return err
