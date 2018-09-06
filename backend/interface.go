@@ -24,7 +24,7 @@ type Store interface {
 	UpsertState(stateID string, name string, lockID string, data []byte) error
 	GetState(stateID string, name string) ([]byte, error)
 	LockState(stateID string, name string, lockInfo string) error
-	UnlockState(stateID string, name string, lockInfo string) error
+	UnlockState(stateID string, name string, lockID string) error
 	DeleteState(stateID string, name string) error
 	Close()
 }

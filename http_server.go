@@ -179,6 +179,10 @@ func (s *httpServer) lockState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// the body should contain the entire lock info
+	// something like this:
+	// {\"ID\":\"21372f90-cb29-bbdf-0fea-75240e6d00bc\",\"Operation\":\"OperationTypeApply\",\"Info\":\"\",\"Who\":\"marco.helmich@live.com\",\"Version\":\"0.11.8\",\"Created\":\"2018-09-06T20:08:23.494957724Z\",\"Path\":\"\"}"
+
 	err = s.store.LockState(stateID, name, string(body))
 	if err == backend.ErrAlreadyLocked {
 		logrus.Infof("LOCK: already locked %s %s", name, stateID)
@@ -206,6 +210,12 @@ func (s *httpServer) unlockState(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// the body now contains only the lock id
+	// not even a json object with the lock id...just the lock id
+	// something like this: 21372f90-cb29-bbdf-0fea-75240e6d00bc
+
+	logrus.Infof("UNLOCK: body %s", string(body))
 
 	err = s.store.UnlockState(stateID, name, string(body))
 	if err != nil {

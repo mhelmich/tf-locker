@@ -301,7 +301,7 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 	return nil
 }
 
-func (ps *postgresStore) UnlockState(stateID string, name string, lockInfo string) error {
+func (ps *postgresStore) UnlockState(stateID string, name string, lockID string) error {
 	txn, err := ps.db.Begin()
 	if err != nil {
 		return err
@@ -326,8 +326,8 @@ func (ps *postgresStore) UnlockState(stateID string, name string, lockInfo strin
 		return err
 	}
 
-	if !queriedLockInfo.Valid || queriedLockInfo.String != lockInfo {
-		return fmt.Errorf("Can't unlock [%s] [%s] because somebody else holds the lock: %s my lockinfo is: %s", name, stateID, queriedLockInfo.String, lockInfo)
+	if !queriedLockInfo.Valid || queriedLockInfo.String != lockID {
+		return fmt.Errorf("Can't unlock [%s] [%s] because somebody else holds the lock: %s my lockinfo is: %s", name, stateID, queriedLockInfo.String, lockID)
 	}
 
 	update, err := txn.Prepare(lockUpdateStr)
