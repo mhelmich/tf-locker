@@ -233,9 +233,16 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 			return err
 		}
 
+		var selectForUpdate2 *sql.Stmt
+		selectForUpdate2, err = txn.Prepare(upsertSelectForUpdateStr)
+		if err != nil {
+			return err
+		}
+
+		defer selectForUpdate2.Close()
 		ctx, cancel = context.WithTimeout(context.Background(), timeout)
 		defer cancel()
-		err = selectForUpdate.QueryRowContext(ctx, stateID, name).Scan(&version, &queriedLockInfo)
+		err = selectForUpdate2.QueryRowContext(ctx, stateID, name).Scan(&version, &queriedLockInfo)
 		if err != nil {
 			return err
 		}
