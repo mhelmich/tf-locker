@@ -225,6 +225,18 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 
 		queriedLockInfo.Valid = true
 		queriedLockInfo.String = lockInfo
+
+		err = txn.Commit()
+		if err != nil {
+			return err
+		}
+
+		ctx, cancel = context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		err = selectForUpdate.QueryRowContext(ctx, stateID, name).Scan(&version, &queriedLockInfo)
+		if err != nil {
+			return err
+		}
 	} else if err != nil {
 		return err
 	}
