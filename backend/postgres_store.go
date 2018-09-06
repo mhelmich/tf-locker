@@ -199,7 +199,31 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 	var queriedLockInfo sql.NullString
 	err = selectForUpdate.QueryRowContext(ctx, stateID, name).Scan(&version, &queriedLockInfo)
 	if err == sql.ErrNoRows {
-		version = 0
+		version = 1
+
+		insert, err := txn.Prepare(upsertInsertStr)
+		if err != nil {
+			return err
+		}
+
+		defer insert.Close()
+		ctx, cancel = context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		var res sql.Result
+		res, err = insert.ExecContext(ctx, stateID, name, version, lockInfo, make([]byte, 0))
+		if err != nil {
+			return err
+		}
+
+		affected, err := res.RowsAffected()
+		if err != nil {
+			return err
+		} else if affected != int64(1) {
+			return fmt.Errorf("inserting didn't work")
+		}
+
+		queriedLockInfo.Valid = true
+		queriedLockInfo.String = lockInfo
 	} else if err != nil {
 		return err
 	}
