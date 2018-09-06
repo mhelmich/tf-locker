@@ -233,6 +233,13 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 			return err
 		}
 
+		txn, err = ps.db.Begin()
+		if err != nil {
+			return err
+		}
+
+		defer txn.Rollback()
+
 		var selectForUpdate2 *sql.Stmt
 		selectForUpdate2, err = txn.Prepare(upsertSelectForUpdateStr)
 		if err != nil {
