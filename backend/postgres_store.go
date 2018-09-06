@@ -23,6 +23,7 @@ import (
 	"time"
 
 	// all go postgres driver
+
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
@@ -289,7 +290,7 @@ func (ps *postgresStore) UnlockState(stateID string, name string, lockInfo strin
 	}
 
 	if !queriedLockInfo.Valid || queriedLockInfo.String != lockInfo {
-		return fmt.Errorf("Can't unlock [%s] [%s] because somebody else holds the lock: %s", name, stateID, queriedLockInfo.String)
+		return fmt.Errorf("Can't unlock [%s] [%s] because somebody else holds the lock: %s my lockinfo is: %s", name, stateID, queriedLockInfo.String, lockInfo)
 	}
 
 	update, err := txn.Prepare(lockUpdateStr)
