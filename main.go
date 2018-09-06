@@ -47,11 +47,13 @@ func main() {
 		dbURL = fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", "franz", "passwd", "franz")
 	}
 
+	logrus.Infof("Connecting to postgres at %s", dbURL)
 	db, err := backend.NewPostgresStore(dbURL)
 	if err != nil {
 		logrus.Panicf("Can't parse port [%s]: %s", strPort, err.Error())
 	}
 
+	logrus.Infof("Start REST service at %d", httpPort)
 	httpServer, err := startNewHTTPServer(httpPort, db)
 	if err != nil {
 		logrus.Panicf("Can't start http server: %s", err.Error())
