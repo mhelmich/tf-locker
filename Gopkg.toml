@@ -34,10 +34,6 @@
   version = "1.6.2"
 
 [[constraint]]
-  name = "github.com/hashicorp/terraform"
-  version = "0.11.8"
-
-[[constraint]]
   name = "github.com/lib/pq"
   version = "1.0.0"
 
