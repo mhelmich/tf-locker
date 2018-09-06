@@ -202,7 +202,8 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 	if err == sql.ErrNoRows {
 		version = 1
 
-		insert, err := txn.Prepare(upsertInsertStr)
+		var insert *sql.Stmt
+		insert, err = txn.Prepare(upsertInsertStr)
 		if err != nil {
 			return err
 		}
@@ -216,7 +217,8 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 			return err
 		}
 
-		affected, err := res.RowsAffected()
+		var affected int64
+		affected, err = res.RowsAffected()
 		if err != nil {
 			return err
 		} else if affected != int64(1) {

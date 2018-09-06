@@ -179,7 +179,7 @@ func (s *httpServer) lockState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logrus.Infof("lock info: %s", string(body))
+	logrus.Infof("LOCK: lock info: %s", string(body))
 
 	// li := &state.LockInfo{}
 	// err = json.Unmarshal(body, li)
@@ -217,7 +217,7 @@ func (s *httpServer) unlockState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logrus.Infof("lock info: %s", string(body))
+	logrus.Infof("UNLOCK: lock info: %s", string(body))
 
 	err = s.store.UnlockState(stateID, name, string(body))
 	if err != nil {
