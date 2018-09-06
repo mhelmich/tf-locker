@@ -136,7 +136,7 @@ func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo strin
 	if lockInfo == "" {
 		res, err = insert.ExecContext(ctx, stateID, name, version, nil, data)
 	} else {
-		res, err = insert.ExecContext(ctx, stateID, name, version, lockInfo, data)
+		res, err = insert.ExecContext(ctx, stateID, name, version, queriedLockInfo.String, data)
 	}
 	if err != nil {
 		return err
