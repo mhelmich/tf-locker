@@ -228,7 +228,9 @@ func (ps *postgresStore) LockState(stateID string, name string, lockInfo string)
 		return err
 	}
 
-	if queriedLockInfo.Valid && queriedLockInfo.String != "" {
+	if queriedLockInfo.Valid && queriedLockInfo.String == lockInfo {
+		return nil
+	} else if queriedLockInfo.String != "" {
 		return ErrAlreadyLocked
 	}
 
