@@ -174,15 +174,17 @@ func (s *httpServer) lockState(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		logrus.Errorf("Can't deserialize request body: %s", err.Error())
+		logrus.Errorf("Can't read request body: %s", err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
+	logrus.Infof("lock info: %s", string(body))
+
 	// li := &state.LockInfo{}
 	// err = json.Unmarshal(body, li)
 	// if err != nil {
-	// 	logrus.Errorf("Can't deserialize body: %s", err.Error())
+	// 	logrus.Errorf("Can't deserialize request body: %s", err.Error())
 	// 	w.WriteHeader(http.StatusInternalServerError)
 	// 	return
 	// }
@@ -214,6 +216,8 @@ func (s *httpServer) unlockState(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	logrus.Infof("lock info: %s", string(body))
 
 	err = s.store.UnlockState(stateID, name, string(body))
 	if err != nil {
