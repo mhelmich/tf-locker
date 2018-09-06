@@ -30,6 +30,7 @@ import (
 )
 
 func main() {
+	logrus.Infof("Starting tf-locker...")
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 
