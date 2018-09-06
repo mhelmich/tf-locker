@@ -127,7 +127,6 @@ func (s *httpServer) setState(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	// lockID := vars["ID"]
 	lockID := r.URL.Query().Get("ID")
 	if lockID == "" {
 		logrus.Info("Empty lock id...")

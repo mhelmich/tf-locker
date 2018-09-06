@@ -85,7 +85,7 @@ func ensureTableExists(db *sql.DB) error {
 	return err
 }
 
-func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo string, data []byte) error {
+func (ps *postgresStore) UpsertState(stateID string, name string, lockID string, data []byte) error {
 	txn, err := ps.db.Begin()
 	if err != nil {
 		return err
@@ -118,8 +118,8 @@ func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo strin
 			return err
 		}
 
-		if li.ID != lockInfo {
-			return fmt.Errorf("Lock ids don't line up: want [%s] have [%s]", queriedLockInfo.String, lockInfo)
+		if li.ID != lockID {
+			return fmt.Errorf("Lock ids don't line up: want [%s] have [%s]", queriedLockInfo.String, lockID)
 		}
 	}
 
@@ -133,9 +133,11 @@ func (ps *postgresStore) UpsertState(stateID string, name string, lockInfo strin
 	ctx, cancel = context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	var res sql.Result
-	if lockInfo == "" {
+	if lockID == "" {
 		res, err = insert.ExecContext(ctx, stateID, name, version, nil, data)
 	} else {
+		// be sure to put the entire lock info back into the DB
+		// not only the lock id
 		res, err = insert.ExecContext(ctx, stateID, name, version, queriedLockInfo.String, data)
 	}
 	if err != nil {

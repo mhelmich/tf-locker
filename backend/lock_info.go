@@ -18,6 +18,9 @@ package backend
 
 import "time"
 
+// LockInfo is virtually copy and pasted from hashicorps original
+// https://github.com/hashicorp/terraform/blob/master/state/state.go#L171
+// needless to say these two data structures need to be in sync
 type LockInfo struct {
 	// Unique ID for the lock. NewLockInfo provides a random ID, but this may
 	// be overridden by the lock implementation. The final value if ID will be
