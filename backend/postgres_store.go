@@ -45,7 +45,7 @@ const (
 )
 
 var (
-	timeout time.Duration = 1 * time.Second
+	timeout time.Duration = 5 * time.Second
 )
 
 type postgresStore struct {
